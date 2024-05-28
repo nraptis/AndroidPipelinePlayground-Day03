@@ -8,7 +8,12 @@ class GraphicsTexture {
     var graphics: GraphicsLibrary?
     var textureIndex: Int
     var width: Int
+    var widthf: Float
+
     var height: Int
+    var heightf: Float
+
+
     var fileName: String?
 
     constructor(context: Context?, graphics: GraphicsLibrary?, fileName: String) : this(graphics,
@@ -22,12 +27,17 @@ class GraphicsTexture {
 
         width = 0
         height = 0
+        widthf = 0.0f
+        heightf = 0.0f
+
         textureIndex = -1
 
         graphics?.let { _graphics ->
             bitmap?.let { _bitmap ->
                 width = _bitmap.width
                 height = _bitmap.height
+                widthf = width.toFloat()
+                heightf = height.toFloat()
                 textureIndex = _graphics.textureGenerate(_bitmap)
             }
         }
@@ -38,6 +48,9 @@ class GraphicsTexture {
         this.fileName = fileName
         this.width = width
         this.height = height
+        this.widthf = width.toFloat()
+        this.heightf = height.toFloat()
+
         textureIndex = -1
 
         graphics?.let { _graphics ->

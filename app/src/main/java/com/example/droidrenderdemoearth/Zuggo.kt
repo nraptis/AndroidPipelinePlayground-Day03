@@ -71,15 +71,17 @@ class Zuggo(graphicsPipeline: GraphicsPipeline?,
 
         graphics?.blendSetAlpha()
 
-        graphics?.linkBufferToShaderProgram(graphicsPipeline?.programBlurHorizontal, vertexBuffer)
+        graphics?.linkBufferToShaderProgram(graphicsPipeline?.programBlurVertical, vertexBuffer)
 
-        graphics?.uniformsTextureSet(graphicsPipeline?.programBlurHorizontal, texture)
-        graphics?.uniformsModulateColorSet(graphicsPipeline?.programBlurHorizontal, color)
-        graphics?.uniformsProjectionMatrixSet(graphicsPipeline?.programBlurHorizontal, projectionMatrix)
-        graphics?.uniformsModelViewMatrixSet(graphicsPipeline?.programBlurHorizontal, modelViewMatrix)
+        graphics?.uniformsTextureSet(graphicsPipeline?.programBlurVertical, texture)
+        graphics?.uniformsModulateColorSet(graphicsPipeline?.programBlurVertical, color)
+        graphics?.uniformsProjectionMatrixSet(graphicsPipeline?.programBlurVertical, projectionMatrix)
+        graphics?.uniformsModelViewMatrixSet(graphicsPipeline?.programBlurVertical, modelViewMatrix)
+
+        graphics?.uniformsTextureSizeSet(graphicsPipeline?.programBlurVertical, texture?.widthf ?: 32.0f, texture?.heightf ?: 32.0f)
 
         graphics?.drawTriangleStrips(indexBuffer, 4)
-        graphics?.unlinkBufferFromShaderProgram (graphicsPipeline?.programBlurHorizontal)
+        graphics?.unlinkBufferFromShaderProgram (graphicsPipeline?.programBlurVertical)
     }
 
 }

@@ -1,6 +1,6 @@
 package com.example.droidrenderdemoearth
 
-class ShaderProgramBlurHorizontal(name: String, vertexShader: Int, fragmentShader: Int) : ShaderProgram(name, vertexShader, fragmentShader) {
+class ShaderProgramBlurVertical(name: String, vertexShader: Int, fragmentShader: Int) : ShaderProgram(name, vertexShader, fragmentShader) {
     // Additional properties or methods specific to Sprite2D shaders can be added here
 
     init {

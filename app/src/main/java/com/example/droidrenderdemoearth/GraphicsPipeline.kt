@@ -33,7 +33,10 @@ class GraphicsPipeline(context: Context) {
 
     val functionBlurVertex: Int
     val functionBlurHorizontalFragment: Int
+    val functionBlurVerticalFragment: Int
     var programBlurHorizontal: ShaderProgramBlurHorizontal
+    var programBlurVertical: ShaderProgramBlurVertical
+
 
     //ShaderProgramBlurHorizontal
 
@@ -68,12 +71,11 @@ class GraphicsPipeline(context: Context) {
 
 
 
-
-
-
         functionBlurVertex = loadShaderVertex("gaussian_blur_vertex.glsl")
         functionBlurHorizontalFragment = loadShaderFragment("gaussian_blur_horizontal_fragment.glsl")
+        functionBlurVerticalFragment = loadShaderFragment("gaussian_blur_vertical_fragment.glsl")
         programBlurHorizontal = ShaderProgramBlurHorizontal("blur_horizontal", functionBlurVertex, functionBlurHorizontalFragment)
+        programBlurVertical = ShaderProgramBlurVertical("blur_vertical", functionBlurVertex, functionBlurVerticalFragment)
 
 
         //gaussian_blur_vertical_fragment.glsl

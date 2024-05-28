@@ -453,6 +453,14 @@ class GraphicsLibrary(activity: GraphicsActivity?,
     }
 
 
+    fun uniformsTextureSizeSet(program: ShaderProgram?, width: Float, height: Float) {
+        program?.let { _program ->
+            if (_program.uniformLocationTextureSize != -1) {
+                GLES20.glUniform2f(_program.uniformLocationTextureSize, width, height)
+            }
+        }
+    }
+
     // @Precondition: linkBufferToShaderProgram has been called with program.
     fun uniformsModulateColorSet(program: ShaderProgram?, color: Color) {
         program?.let { _program ->
