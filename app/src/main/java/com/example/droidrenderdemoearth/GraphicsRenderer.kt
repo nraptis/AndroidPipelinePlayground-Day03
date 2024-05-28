@@ -31,18 +31,20 @@ class GraphicsRenderer(var context: Context?,
     private lateinit var mZebraHoof: ZebraHoof
     private lateinit var mZig: Zig
 
+    private lateinit var mZuggo: Zuggo
+
+
+
+
     private lateinit var mEarth: Earth
 
     private  lateinit var starBackground: GraphicsTexture
     private  lateinit var earthMap: GraphicsTexture
 
-
+    private  lateinit var testTexture: GraphicsTexture
 
 
     init {
-
-        print("Renderer Width: " + width)
-        print("Renderer Height: " + height)
 
     }
 
@@ -114,17 +116,21 @@ class GraphicsRenderer(var context: Context?,
         starBackground = GraphicsTexture(context, graphics, "galaxy.jpg")
         earthMap = GraphicsTexture(context, graphics, "earth_texture.jpg")
 
+
+        testTexture = GraphicsTexture(context, graphics, "test.png")
+
+
+
         mEarth = Earth(graphics, graphicsPipeline)
 
-        mZippo = Zippo(graphicsPipeline, starBackground, graphics)
+        mZippo = Zippo(graphicsPipeline, testTexture, graphics)
         mYodel = Yodel(graphicsPipeline, graphics)
         mZebraHoof = ZebraHoof(graphicsPipeline, graphics, mEarth)
 
 
         mZig = Zig(graphicsPipeline, graphics, earthMap, mEarth)
 
-
-
+        mZuggo = Zuggo(graphicsPipeline, testTexture, graphics)
 
 
         // Set the background frame color
@@ -166,14 +172,6 @@ class GraphicsRenderer(var context: Context?,
 
 
 
-        GLES20.glBindFramebuffer(GLES20.GL_FRAMEBUFFER, frameBufferIndex)
-
-        mZippo.draw()
-
-        GLES20.glBindFramebuffer(GLES20.GL_FRAMEBUFFER, 0)
-
-        mYodel.draw()
-
         GLES20.glBindFramebuffer(GLES20.GL_FRAMEBUFFER, 0)
 
 
@@ -204,7 +202,9 @@ class GraphicsRenderer(var context: Context?,
         mZig.draw()
 
 
+        mZuggo.draw()
 
+        mZippo.draw();
 
         surfaceView?.requestRender()
     }

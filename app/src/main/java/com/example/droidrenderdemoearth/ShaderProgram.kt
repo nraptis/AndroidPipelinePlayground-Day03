@@ -1,5 +1,6 @@
 package com.example.droidrenderdemoearth
 import android.opengl.GLES20
+import android.util.Log
 
 open class ShaderProgram(name: String, val vertexShader: Int, val fragmentShader: Int) {
     var program: Int = 0
@@ -11,6 +12,10 @@ open class ShaderProgram(name: String, val vertexShader: Int, val fragmentShader
     var uniformLocationModulateColor = -1
     var uniformLocationProjectionMatrix = -1
     var uniformLocationModelViewMatrix = -1
+
+    var uniformLocationTextureWidth = -1
+    var uniformLocationTextureHeight = -1
+
 
 
     var attributeStridePosition = -1
@@ -28,6 +33,17 @@ open class ShaderProgram(name: String, val vertexShader: Int, val fragmentShader
         if ((vertexShader > 0) && (fragmentShader > 0)) {
             program = loadProgram(vertexShader, fragmentShader)
             println("==> Success! Created Shader Program [" + name + "], vertexShader: " + vertexShader + ", fragmentShader: " + fragmentShader + ", program = " + program)
+
+            /*
+            val compileStatus = IntArray(1)
+            GLES20.glGetShaderiv(program, GLES20.GL_COMPILE_STATUS, compileStatus, 0)
+            if (compileStatus[0] == 0) {
+                val log = GLES20.glGetShaderInfoLog(program)
+                Log.e("ShaderCompile", "Error compiling shader: $log")
+                GLES20.glDeleteShader(program)
+            }
+            */
+
         } else {
             println("==> Failed! Created Shader Program [" + name + "], vertexShader: " + vertexShader + ", fragmentShader: " + fragmentShader)
             program = 0

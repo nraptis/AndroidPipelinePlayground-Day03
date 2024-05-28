@@ -2,6 +2,7 @@ package com.example.droidrenderdemoearth
 
 import android.content.Context
 import android.opengl.GLES20
+import android.util.Log
 import java.lang.ref.WeakReference
 
 class GraphicsPipeline(context: Context) {
@@ -28,6 +29,13 @@ class GraphicsPipeline(context: Context) {
     val functionShape3DVertex: Int
     val functionShape3DFragment: Int
     var programShape3D: ShaderProgramShape3D
+
+
+    val functionBlurVertex: Int
+    val functionBlurHorizontalFragment: Int
+    var programBlurHorizontal: ShaderProgramBlurHorizontal
+
+    //ShaderProgramBlurHorizontal
 
     /*
     shape_2d_fragment.glsl
@@ -58,6 +66,27 @@ class GraphicsPipeline(context: Context) {
         programShape3D = ShaderProgramShape3D("shape_3d", functionShape3DVertex, functionShape3DFragment)
 
 
+
+
+
+
+
+        functionBlurVertex = loadShaderVertex("gaussian_blur_vertex.glsl")
+        functionBlurHorizontalFragment = loadShaderFragment("gaussian_blur_horizontal_fragment.glsl")
+        programBlurHorizontal = ShaderProgramBlurHorizontal("blur_horizontal", functionBlurVertex, functionBlurHorizontalFragment)
+
+
+        //gaussian_blur_vertical_fragment.glsl
+
+        /*
+        val compileStatus = IntArray(1)
+        GLES20.glGetShaderiv(functionBlurHorizontalFragment, GLES20.GL_COMPILE_STATUS, compileStatus, 0)
+        if (compileStatus[0] == 0) {
+            val log = GLES20.glGetShaderInfoLog(functionBlurHorizontalFragment)
+            Log.e("ShaderCompile", "Error compiling shader: $log")
+            GLES20.glDeleteShader(functionBlurHorizontalFragment)
+        }
+         */
     }
 
     private fun loadProgram(vertexShader: Int, fragmentShader: Int): Int {
