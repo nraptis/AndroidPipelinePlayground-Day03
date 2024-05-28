@@ -4,13 +4,9 @@ import android.content.Context
 import android.opengl.GLSurfaceView
 class GraphicsSurfaceView(var activity: GraphicsActivity?) : GLSurfaceView(activity) {
 
-    //val width: Int = this.resources.displayMetrics.widthPixels
-    //val height: Int = this.resources.displayMetrics.heightPixels
-
     private lateinit var renderer: GraphicsRenderer
     init {
-        print("WE INITISINIS")
-
+        setEGLContextClientVersion(2)
     }
 
     override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
@@ -23,10 +19,12 @@ class GraphicsSurfaceView(var activity: GraphicsActivity?) : GLSurfaceView(activ
         print("SURFACE CHANGED: WIDTH: " + w)
         print("SURFACE CHANGED: HEOGHT: " + h)
 
-        setEGLContextClientVersion(2)
-        renderer = GraphicsRenderer(context, activity,this, width, height)
+        val earthScene = EarthScene(width, height, context, activity)
+
+        renderer = GraphicsRenderer(earthScene, context, activity,this, width, height)
         setRenderer(renderer)
         renderMode = GLSurfaceView.RENDERMODE_WHEN_DIRTY
+
     }
 
 }

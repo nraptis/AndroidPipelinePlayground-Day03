@@ -384,8 +384,10 @@ class GraphicsLibrary(activity: GraphicsActivity?,
         GLES20.glDrawElements(GLES20.GL_TRIANGLES, count, GLES20.GL_UNSIGNED_INT, indexBuffer)
     }
 
-    fun drawTriangleStrips(indexBuffer: IntBuffer, count: Int) {
-        GLES20.glDrawElements(GLES20.GL_TRIANGLE_STRIP, count, GLES20.GL_UNSIGNED_INT, indexBuffer)
+    fun drawTriangleStrips(indexBuffer: IntBuffer?, count: Int) {
+        indexBuffer?.let {
+            GLES20.glDrawElements(GLES20.GL_TRIANGLE_STRIP, count, GLES20.GL_UNSIGNED_INT, it)
+        }
     }
 
 

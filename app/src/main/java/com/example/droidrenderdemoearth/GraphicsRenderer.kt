@@ -1,7 +1,6 @@
 package com.example.droidrenderdemoearth
 
 import android.content.Context
-import android.graphics.Bitmap
 import javax.microedition.khronos.egl.EGLConfig
 import javax.microedition.khronos.opengles.GL10
 import android.opengl.GLES20
@@ -9,7 +8,40 @@ import android.opengl.GLSurfaceView
 import java.lang.ref.WeakReference
 import java.nio.IntBuffer
 
-class GraphicsRenderer(var context: Context?,
+interface GraphicsScene {
+
+    var width: Int
+    var height: Int
+
+    var context: Context?
+    var activity: GraphicsActivity?
+
+    var graphicsPipeline: GraphicsPipeline?
+    var graphics: GraphicsLibrary?
+
+
+    // Expected graphicsPipeline and graphics to be set by now...
+    fun initialize(config: EGLConfig)
+
+    fun load()
+    fun loadComplete()
+
+    fun update(deltaTime: Float)
+
+    //fun
+    fun draw3DPrebloom(width: Int, height: Int)
+    fun draw3DBloom(width: Int, height: Int)
+
+    fun draw3DStereoscopicLeft(width: Int, height: Int)
+    fun draw3DStereoscopicRight(width: Int, height: Int)
+
+    fun draw3D(width: Int, height: Int)
+    fun draw2D(width: Int, height: Int)
+
+}
+
+class GraphicsRenderer(var scene: GraphicsScene?,
+                       var context: Context?,
                        activity: GraphicsActivity?,
                        surfaceView: GraphicsSurfaceView?,
                        var width: Int,
@@ -26,41 +58,27 @@ class GraphicsRenderer(var context: Context?,
         get() = activityRef.get()
 
 
-    private lateinit var mZippo: Zippo
-    private lateinit var mYodel: Yodel
-    private lateinit var mZebraHoof: ZebraHoof
-    private lateinit var mZig: Zig
-
-    private lateinit var mZuggo: Zuggo
-
-
-
-
     private lateinit var mEarth: Earth
 
-    private  lateinit var starBackground: GraphicsTexture
-    private  lateinit var earthMap: GraphicsTexture
+    val starBackground = GraphicsTexture()
+    val earthMap = GraphicsTexture()
+    val testTexture = GraphicsTexture()
 
-    private  lateinit var testTexture: GraphicsTexture
+
+    val renderTargetPreBloom = GraphicsRenderTarget()
+    val renderTargetBloom = GraphicsRenderTarget()
+
 
 
     init {
 
     }
 
-    var frameBufferIndex = -1
-
-    var renderBufferIndex = -1
+    /*
 
 
-    var junkText = -1
 
-    val zippoVertz = arrayOf(
-        VertexSprite2D(-512.0f, -512.0f, 0.0f, 0.0f),
-        VertexSprite2D(512.0f, -512.0f, 1.0f, 0.0f),
-        VertexSprite2D(-512.0f, 512.0f, 0.0f, 1.0f),
-        VertexSprite2D(512.0f, 512.0f, 1.0f, 1.0f)
-    )
+
 
     val indices = intArrayOf(0, 1, 2, 3)
     lateinit var indexBuffer: IntBuffer
@@ -69,6 +87,15 @@ class GraphicsRenderer(var context: Context?,
     var projectionMatrix = Matrix()
     var modelViewMatrix = Matrix()
 
+     */
+
+    //var frameBufferTextureIndex = -1
+    //var frameBufferIndex = -1
+    //var renderBufferIndex = -1
+    //val frameBufferTexture = GraphicsTexture()
+    //var frameBufferSpriteInstance = GraphicsSprite2DInstance()
+
+
     override fun onSurfaceCreated(unused: GL10, config: EGLConfig) {
 
 
@@ -76,11 +103,51 @@ class GraphicsRenderer(var context: Context?,
         graphics = GraphicsLibrary(activity, this, graphicsPipeline, surfaceView, width, height)
 
 
+        scene?.graphicsPipeline = graphicsPipeline
+        scene?.graphics = graphics
+        scene?.initialize(config)
 
 
-        junkText = graphics.textureGenerate(width, height)
+        renderTargetPreBloom.load(graphics, graphicsPipeline, width, height)
 
-        vertexBuffer = GraphicsArrayBuffer(graphics, zippoVertz)
+        renderTargetBloom.load(graphics, graphicsPipeline, width, height)
+
+
+        renderTargetPreBloom.frameBufferSpriteInstance.setPositionFrame(0.0f, 0.0f, width / 2.0f, height.toFloat())
+        renderTargetBloom.frameBufferSpriteInstance.setPositionFrame(width / 2.0f, 0.0f, width / 2.0f, height.toFloat())
+
+
+
+        //frameBufferSpriteInstance.setPositionFrame(0.0f, 0.0f, width.toFloat(), height.toFloat())
+
+        scene?.load()
+        scene?.loadComplete()
+
+
+
+
+
+        /*
+        frameBufferTextureIndex = graphics.textureGenerate(width, height)
+
+        val frameBufferHandle = IntArray(1)
+        GLES20.glGenFramebuffers(1, frameBufferHandle, 0)
+        frameBufferIndex = frameBufferHandle[0]
+        GLES20.glBindFramebuffer(GLES20.GL_FRAMEBUFFER, frameBufferIndex)
+        GLES20.glFramebufferTexture2D(GLES20.GL_FRAMEBUFFER, GLES20.GL_COLOR_ATTACHMENT0, GLES20.GL_TEXTURE_2D, frameBufferTextureIndex, 0)
+        frameBufferTexture.load(graphics, frameBufferTextureIndex, width, height)
+        frameBufferSpriteInstance.load(graphics, frameBufferTexture)
+
+
+        GLES20.glBindFramebuffer(GLES20.GL_FRAMEBUFFER, 0)
+
+         */
+
+
+        /*
+
+
+        vertexBuffer = GraphicsArrayBuffer(graphics)
         indexBuffer = graphics?.indexBufferGenerate(indices) ?: IntBuffer.allocate(0)
 
 
@@ -107,40 +174,37 @@ class GraphicsRenderer(var context: Context?,
 
         println("frameBufferIndex = " + frameBufferIndex)
 
+        */
 
-
-
-
-
-
-        starBackground = GraphicsTexture(context, graphics, "galaxy.jpg")
-        earthMap = GraphicsTexture(context, graphics, "earth_texture.jpg")
-
-
-        testTexture = GraphicsTexture(context, graphics, "test.png")
+        starBackground.load(context, graphics, "galaxy.jpg")
+        earthMap.load(context, graphics, "earth_texture.jpg")
+        testTexture.load(context, graphics, "test.png")
 
 
 
         mEarth = Earth(graphics, graphicsPipeline)
 
-        mZippo = Zippo(graphicsPipeline, testTexture, graphics)
-        mYodel = Yodel(graphicsPipeline, graphics)
-        mZebraHoof = ZebraHoof(graphicsPipeline, graphics, mEarth)
-
-
-        mZig = Zig(graphicsPipeline, graphics, earthMap, mEarth)
-
-        mZuggo = Zuggo(graphicsPipeline, testTexture, graphics)
-
-
-        // Set the background frame color
 
     }
 
+    private var previousFrameTimestamp: Long? = null
+
+
     var spin = 0.0f
     override fun onDrawFrame(unused: GL10) {
-        // Redraw background color
 
+        val currentFrameTimestamp = System.currentTimeMillis()
+        var deltaTime = 0.0f
+        previousFrameTimestamp?.let { _previousFrameTimestamp ->
+            deltaTime = (currentFrameTimestamp - _previousFrameTimestamp).toFloat() / 1000.0f
+        }
+        scene?.update(deltaTime)
+        previousFrameTimestamp = currentFrameTimestamp
+
+
+
+        /*
+        // Redraw background color
         val piFloat: Float = kotlin.math.PI.toFloat()
         spin -= 0.01f
         if (spin < 0.0f) {
@@ -163,18 +227,10 @@ class GraphicsRenderer(var context: Context?,
         GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT)
 
 
-        mZebraHoof.draw()
-        mZig.draw()
         mZippo.draw()
-        mYodel.draw()
-
-
-
 
 
         GLES20.glBindFramebuffer(GLES20.GL_FRAMEBUFFER, 0)
-
-
 
         if (true) {
 
@@ -195,16 +251,35 @@ class GraphicsRenderer(var context: Context?,
             graphics?.drawTriangleStrips(indexBuffer, 4)
             graphics?.unlinkBufferFromShaderProgram(graphicsPipeline?.programSprite2D)
         }
+        */
 
 
-        mZebraHoof.draw()
+        GLES20.glBindFramebuffer(GLES20.GL_FRAMEBUFFER, renderTargetPreBloom.frameBufferIndex)
+        GLES20.glClearColor(0.2f, 0.0f, 0.1f, 1.0f)
+        GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT)
+        scene?.draw2D(width, height)
 
-        mZig.draw()
 
 
-        mZuggo.draw()
+        GLES20.glBindFramebuffer(GLES20.GL_FRAMEBUFFER, renderTargetBloom.frameBufferIndex)
+        GLES20.glClearColor(0.0f, 0.15f, 0.4f, 1.0f)
+        GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT)
+        scene?.draw3D(width, height)
 
-        mZippo.draw();
+
+
+        GLES20.glBindFramebuffer(GLES20.GL_FRAMEBUFFER, 0)
+        GLES20.glClearColor(1.0f, 0.15f, 0.4f, 1.0f)
+        GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT)
+
+
+        renderTargetPreBloom.render()
+        renderTargetBloom.render()
+
+        //frameBufferSpriteInstance.setPositionFrame(200.0f, 200.0f, 800.0f, 782.0f)
+        //frameBufferSpriteInstance.projectionMatrix.ortho(width, height)
+        //frameBufferSpriteInstance.modelViewMatrix.reset()
+        //frameBufferSpriteInstance.render(graphicsPipeline.programSprite2D)
 
         surfaceView?.requestRender()
     }

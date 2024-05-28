@@ -1,15 +1,7 @@
 package com.example.droidrenderdemoearth
 
-import java.nio.IntBuffer
-
 class Earth(var graphics: GraphicsLibrary?,
             var graphicsPipeline: GraphicsPipeline?) {
-
-    //val shapeVertexArray: Array<VertexShape3D>
-    //val shapeVertexBuffer: GraphicsArrayBuffer<VertexShape3D>
-
-    //val indices: IntArray
-    //val indexBuffer: IntBuffer
 
     var earthModelData: EarthModelData
     var earthModelDataStrips: Array<EarthModelDataStrip>
@@ -21,9 +13,6 @@ class Earth(var graphics: GraphicsLibrary?,
         earthModelDataStrips = Array<EarthModelDataStrip>(EarthModelData.tileCountV) {
             EarthModelDataStrip(earthModelData, it + 1, graphics, graphicsPipeline)
         }
-        //earthModelDataStrips.
-
-
     }
 
 }

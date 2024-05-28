@@ -57,6 +57,25 @@ data class Matrix(
         )
     }
 
+    fun reset() {
+        m00 = 1.0f
+        m01 = 0.0f
+        m02 = 0.0f
+        m03 = 0.0f
+        m10 = 0.0f
+        m11 = 1.0f
+        m12 = 0.0f
+        m13 = 0.0f
+        m20 = 0.0f
+        m21 = 0.0f
+        m22 = 1.0f
+        m23 = 0.0f
+        m30 = 0.0f
+        m31 = 0.0f
+        m32 = 0.0f
+        m33 = 1.0f
+    }
+
     fun make(
         m00: Float, m01: Float, m02: Float, m03: Float,
         m10: Float, m11: Float, m12: Float, m13: Float,
@@ -94,6 +113,10 @@ data class Matrix(
             0.0f, 0.0f, -2.0f / fsn, 0.0f,
             -ral / rsl, -tab / tsb, -fan / fsn, 1.0f
         )
+    }
+
+    fun ortho(width: Int, height: Int) {
+        ortho(0.0f, width.toFloat(), height.toFloat(), 0.0f, -1024.0f, 0.0f)
     }
 
     fun ortho(width: Float, height: Float) {

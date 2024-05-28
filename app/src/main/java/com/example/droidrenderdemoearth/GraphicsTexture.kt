@@ -5,33 +5,29 @@ import android.graphics.Bitmap
 
 class GraphicsTexture {
 
-    var graphics: GraphicsLibrary?
-    var textureIndex: Int
-    var width: Int
-    var widthf: Float
+    var graphics: GraphicsLibrary? = null
+    var textureIndex = -1
+    var width = 0
+    var widthf = 0.0f
 
-    var height: Int
-    var heightf: Float
+    var height = 0
+    var heightf = 0.0f
 
+    var fileName: String? = null
 
-    var fileName: String?
-
-    constructor(context: Context?, graphics: GraphicsLibrary?, fileName: String) : this(graphics,
-        FileUtils.readFileFromAssetAsBitmap(context, fileName), fileName) {
-
+    fun load(context: Context?, graphics: GraphicsLibrary?, fileName: String) {
+        val bitmap = FileUtils.readFileFromAssetAsBitmap(context, fileName)
+        load(graphics, bitmap, fileName)
     }
 
-    constructor(graphics: GraphicsLibrary?, bitmap: Bitmap?, fileName: String? = null) {
+    fun load(graphics: GraphicsLibrary?, bitmap: Bitmap?, fileName: String? = null) {
         this.graphics = graphics
         this.fileName = fileName
-
         width = 0
         height = 0
         widthf = 0.0f
         heightf = 0.0f
-
         textureIndex = -1
-
         graphics?.let { _graphics ->
             bitmap?.let { _bitmap ->
                 width = _bitmap.width
@@ -43,19 +39,27 @@ class GraphicsTexture {
         }
     }
 
-    constructor(graphics: GraphicsLibrary?, width: Int, height: Int, fileName: String? = null) {
+    fun load(graphics: GraphicsLibrary?, width: Int, height: Int, fileName: String? = null) {
         this.graphics = graphics
         this.fileName = fileName
         this.width = width
         this.height = height
-        this.widthf = width.toFloat()
-        this.heightf = height.toFloat()
-
+        widthf = width.toFloat()
+        heightf = height.toFloat()
         textureIndex = -1
-
-        graphics?.let { _graphics ->
-            textureIndex = _graphics.textureGenerate(width, height)
+        graphics?.let {
+            textureIndex = it.textureGenerate(width, height)
         }
+    }
+
+    fun load(graphics: GraphicsLibrary?, textureIndex: Int, width: Int, height: Int, fileName: String? = null) {
+        this.graphics = graphics
+        this.fileName = fileName
+        this.width = width
+        this.height = height
+        widthf = width.toFloat()
+        heightf = height.toFloat()
+        this.textureIndex = textureIndex
     }
 
 }

@@ -79,9 +79,10 @@ class EarthModelDataStrip(var earthModelData: EarthModelData?,
             }
         }
 
-        shapeVertexBuffer = GraphicsArrayBuffer(graphics, shapeVertexArray)
-        spriteVertexBuffer = GraphicsArrayBuffer(graphics, spriteVertexArray)
+        shapeVertexBuffer = GraphicsArrayBuffer()
+        shapeVertexBuffer.load(graphics, shapeVertexArray)
 
-
+        spriteVertexBuffer = GraphicsArrayBuffer()
+        spriteVertexBuffer.load(graphics, spriteVertexArray)
     }
 }
