@@ -6,8 +6,8 @@ import kotlin.math.PI
 class EarthModelData(width: Float, height: Float) {
 
     companion object {
-        const val tileCountV = 8
-        const val tileCountH = 8
+        const val tileCountV = 64
+        const val tileCountH = 64
     }
 
     val points: Array<Array<Float3>>

@@ -38,6 +38,12 @@ class GraphicsRenderTarget {
             frameBufferSpriteInstance.setPositionFrame(0.0f, 0.0f, width.toFloat(), height.toFloat())
             frameBufferSpriteInstance.projectionMatrix.ortho(width, height)
             frameBufferSpriteInstance.modelViewMatrix.reset()
+
+
+            //frameBufferSpriteInstance.modelViewMatrix.scale(1.0f, -1.0f, 1.0f)
+            //frameBufferSpriteInstance.modelViewMatrix.translation(width / 2.0f, height / 2.0f, 0.0f)
+
+
         }
     }
 

@@ -178,6 +178,21 @@ data class Matrix(
         //m33 * scale
     }
 
+    fun scale(scaleX: Float, scaleY: Float, scaleZ: Float) {
+        m00 *= scaleX
+        m01 *= scaleX
+        m02 *= scaleX
+        m03 *= scaleX
+        m10 *= scaleY
+        m11 *= scaleY
+        m12 *= scaleY
+        m13 *= scaleY
+        m20 *= scaleZ
+        m21 *= scaleZ
+        m22 *= scaleZ
+        m23 *= scaleZ
+    }
+
     fun rotationZ(radians: Float) {
         val _cos = cos(radians)
         val _sin = sin(radians)

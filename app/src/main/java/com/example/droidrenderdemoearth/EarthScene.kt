@@ -14,10 +14,15 @@ class EarthScene(
     override var graphics: GraphicsLibrary? = null
 
     val earthMap = GraphicsTexture()
+    val galaxyMap = GraphicsTexture()
+
+
     val testTexture = GraphicsTexture()
 
 
+    var earth: Earth? = null
 
+    var galaxyInstance = GraphicsSprite2DInstance()
 
 
     var blahInstane = GraphicsSprite2DInstance()
@@ -31,6 +36,9 @@ class EarthScene(
     var geraldoHanjab2 = GraphicsSpriteBlurInstance()
 
 
+
+    var testShape1 = GraphicsShape2DInstance()
+    var testShape2 = GraphicsShape3DInstance()
 
 
 
@@ -48,6 +56,14 @@ class EarthScene(
         earthMap.load(context, graphics, "earth_texture.jpg")
         testTexture.load(context, graphics, "test.png")
 
+
+        galaxyMap.load(context, graphics, "galaxy.jpg")
+        galaxyInstance.load(graphics, galaxyMap)
+        galaxyInstance.projectionMatrix.ortho(width, height)
+        galaxyInstance.setPositionQuad(0.0f, 0.0f,
+            width.toFloat(), 0.0f,
+            0.0f, height.toFloat(),
+            width.toFloat(), height.toFloat())
 
 
 
@@ -80,9 +96,16 @@ class EarthScene(
 
 
 
+        testShape1.load(graphics)
+        testShape1.projectionMatrix.ortho(width, height)
+        testShape1.setPositionFrame(100.0f, 100.0f, 100.0f, 300.0f)
+
+
+        testShape2.load(graphics)
+        testShape2.projectionMatrix.ortho(width, height)
+        testShape2.setPositionFrame(300.0f, 400.0f, 100.0f, 600.0f)
 
     }
-
 
     override fun loadComplete() {
         println("EarthScene => loadComplete")
@@ -96,9 +119,13 @@ class EarthScene(
 
     //fun
     override fun draw3DPrebloom(width: Int, height: Int) {
-
+        galaxyInstance.render(graphicsPipeline?.programSprite2D)
     }
     override fun draw3DBloom(width: Int, height: Int) {
+
+        earth?.let {
+            it.draw3DBloom(width, height)
+        }
 
     }
 
@@ -112,49 +139,15 @@ class EarthScene(
     var svn = 0.0f
 
     override fun draw3D(width: Int, height: Int) {
-
-        svn += 0.01f
-        if (svn > (2.0f * 3.14f)) {
-            svn -= 2.0f * 3.14f
+        earth?.let {
+            it.draw3D(width, height)
         }
-
-
-
-        blahInstane.setPositionFrame(-512.0f, -512.0f, 1024.0f, 1024.0f)
-        blahInstane.modelViewMatrix.translation(width / 4.0f, height * 3.0f / 4.0f, 0.0f)
-        blahInstane.modelViewMatrix.rotateZ(-svn)
-        blahInstane.modelViewMatrix.scale(0.5f)
-
-        blahInstane.render(graphicsPipeline?.programSprite2D)
-
-        davidBlane.setPositionFrame(-512.0f, -512.0f, 1024.0f, 1024.0f)
-        davidBlane.modelViewMatrix.translation(width / 4.0f, height / 4.0f, 0.0f)
-        davidBlane.modelViewMatrix.rotateZ(svn)
-        davidBlane.modelViewMatrix.scale(0.5f)
-
-        davidBlane.render(graphicsPipeline?.programSprite3D)
-
-
-        tomRizzo.setPositionFrame(-512.0f, -512.0f, 1024.0f, 1024.0f)
-        tomRizzo.modelViewMatrix.translation(width * 3.0f / 4.0f, height * 3.0f / 4.0f, 0.0f)
-        tomRizzo.modelViewMatrix.rotateZ(svn)
-        tomRizzo.modelViewMatrix.scale(0.5f)
-
-        tomRizzo.render(graphicsPipeline?.programBlurHorizontal)
-
-
-        geraldoHanjab.setPositionFrame(-512.0f, -512.0f, 1024.0f, 1024.0f)
-        geraldoHanjab.modelViewMatrix.translation(width * 3.0f / 4.0f, height / 4.0f, 0.0f)
-        geraldoHanjab.modelViewMatrix.rotateZ(svn)
-        geraldoHanjab.modelViewMatrix.scale(0.5f)
-
-        geraldoHanjab.render(graphicsPipeline?.programBlurVertical)
-
-
     }
     override fun draw2D(width: Int, height: Int) {
 
 
+
+        /*
         blahInstane2.setPositionFrame(-512.0f, -512.0f, 1024.0f, 1024.0f)
         blahInstane2.modelViewMatrix.translation(width / 4.0f, height * 3.0f / 4.0f + 100.0f, 0.0f)
         blahInstane2.modelViewMatrix.rotateZ(svn)
@@ -182,6 +175,8 @@ class EarthScene(
         geraldoHanjab2.modelViewMatrix.rotateZ(-svn)
         geraldoHanjab2.modelViewMatrix.scale(0.75f)
         geraldoHanjab2.render(graphicsPipeline?.programBlurVertical)
+
+         */
 
     }
 

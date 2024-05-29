@@ -375,6 +375,11 @@ class GraphicsLibrary(activity: GraphicsActivity?,
         GLES20.glBlendFunc(GLES20.GL_SRC_ALPHA, GLES20.GL_ONE_MINUS_SRC_ALPHA)
     }
 
+    fun blendSetAdditive() {
+        GLES20.glEnable(GLES20.GL_BLEND)
+        GLES20.glBlendFunc(GLES20.GL_SRC_ALPHA, GLES20.GL_ONE)
+    }
+
     fun blendSetDisabled() {
         GLES20.glDisable(GLES20.GL_BLEND)
     }

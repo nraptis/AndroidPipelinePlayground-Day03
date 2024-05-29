@@ -40,7 +40,7 @@ interface GraphicsScene {
 
 }
 
-class GraphicsRenderer(var scene: GraphicsScene?,
+class GraphicsRenderer(var scene: EarthScene?,
                        var context: Context?,
                        activity: GraphicsActivity?,
                        surfaceView: GraphicsSurfaceView?,
@@ -58,7 +58,7 @@ class GraphicsRenderer(var scene: GraphicsScene?,
         get() = activityRef.get()
 
 
-    private lateinit var mEarth: Earth
+    private lateinit var earth: Earth
 
     val starBackground = GraphicsTexture()
     val earthMap = GraphicsTexture()
@@ -66,8 +66,16 @@ class GraphicsRenderer(var scene: GraphicsScene?,
 
 
     val renderTargetPreBloom = GraphicsRenderTarget()
+
     val renderTargetBloom = GraphicsRenderTarget()
 
+
+    val renderTargetBlur1 = GraphicsRenderTarget()
+    val renderTargetBlur2 = GraphicsRenderTarget()
+
+
+    var blurInstance1 = GraphicsSpriteBlurInstance()
+    var blurInstance2 = GraphicsSpriteBlurInstance()
 
 
     init {
@@ -108,18 +116,34 @@ class GraphicsRenderer(var scene: GraphicsScene?,
         scene?.initialize(config)
 
 
+
         renderTargetPreBloom.load(graphics, graphicsPipeline, width, height)
 
         renderTargetBloom.load(graphics, graphicsPipeline, width, height)
 
 
-        renderTargetPreBloom.frameBufferSpriteInstance.setPositionFrame(0.0f, 0.0f, width / 2.0f, height.toFloat())
-        renderTargetBloom.frameBufferSpriteInstance.setPositionFrame(width / 2.0f, 0.0f, width / 2.0f, height.toFloat())
+        //renderTargetBlur1.load(graphics, graphicsPipeline, width / 4, height / 4)
+        //        renderTargetBlur2.load(graphics, graphicsPipeline, width / 4, height / 4)
+        //
+        renderTargetBlur1.load(graphics, graphicsPipeline, width, height)
+        renderTargetBlur2.load(graphics, graphicsPipeline, width, height)
+
+
+        blurInstance1.load(graphics, renderTargetBlur1.frameBufferTexture)
+        blurInstance2.load(graphics, renderTargetBlur2.frameBufferTexture)
+
+
+
+        //renderTargetPreBloom.frameBufferSpriteInstance.setPositionFrame(0.0f, 0.0f, width / 2.0f, height.toFloat())
+        //renderTargetBloom.frameBufferSpriteInstance.setPositionFrame(width / 2.0f, 0.0f, width / 2.0f, height.toFloat())
 
 
 
         //frameBufferSpriteInstance.setPositionFrame(0.0f, 0.0f, width.toFloat(), height.toFloat())
 
+        earth = Earth(graphics, graphicsPipeline, earthMap)
+
+        scene?.earth = earth
         scene?.load()
         scene?.loadComplete()
 
@@ -182,7 +206,7 @@ class GraphicsRenderer(var scene: GraphicsScene?,
 
 
 
-        mEarth = Earth(graphics, graphicsPipeline)
+
 
 
     }
@@ -257,31 +281,89 @@ class GraphicsRenderer(var scene: GraphicsScene?,
         GLES20.glBindFramebuffer(GLES20.GL_FRAMEBUFFER, renderTargetPreBloom.frameBufferIndex)
         GLES20.glClearColor(0.2f, 0.0f, 0.1f, 1.0f)
         GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT)
-        scene?.draw2D(width, height)
-
-
+        scene?.draw3DPrebloom(width, height)
 
         GLES20.glBindFramebuffer(GLES20.GL_FRAMEBUFFER, renderTargetBloom.frameBufferIndex)
-        GLES20.glClearColor(0.0f, 0.15f, 0.4f, 1.0f)
+        GLES20.glClearColor(0.0f, 0.0f, 0.0f, 1.0f)
         GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT)
-        scene?.draw3D(width, height)
+        scene?.draw3DBloom(width, height)
 
+
+        //
+        // Juggle Da Blurrr
+        //
+
+        GLES20.glBindFramebuffer(GLES20.GL_FRAMEBUFFER, renderTargetBlur1.frameBufferIndex)
+        renderTargetBloom.frameBufferSpriteInstance.render(graphicsPipeline?.programBlurHorizontal)
+
+        GLES20.glBindFramebuffer(GLES20.GL_FRAMEBUFFER, renderTargetBlur2.frameBufferIndex)
+        renderTargetBlur1.frameBufferSpriteInstance.render(graphicsPipeline?.programBlurVertical)
+
+
+        for (i in 0 until 8) {
+            GLES20.glBindFramebuffer(GLES20.GL_FRAMEBUFFER, renderTargetBlur1.frameBufferIndex)
+            renderTargetBlur2.frameBufferSpriteInstance.render(graphicsPipeline?.programBlurHorizontal)
+
+            GLES20.glBindFramebuffer(GLES20.GL_FRAMEBUFFER, renderTargetBlur2.frameBufferIndex)
+            renderTargetBlur1.frameBufferSpriteInstance.render(graphicsPipeline?.programBlurVertical)
+        }
+
+
+        /*
+        for (i in 0 until 1) {
+            GLES20.glBindFramebuffer(GLES20.GL_FRAMEBUFFER, renderTargetBlur1.frameBufferIndex)
+            renderTargetBlur2.frameBufferSpriteInstance.render(graphicsPipeline?.programBlurVertical)
+
+            GLES20.glBindFramebuffer(GLES20.GL_FRAMEBUFFER, renderTargetBlur2.frameBufferIndex)
+            renderTargetBlur1.frameBufferSpriteInstance.render(graphicsPipeline?.programBlurHorizontal)
+        }
+
+         */
+
+        //scene?.draw3DBloom(width, height)
+
+        //blurInstance1.load(graphics, renderTargetBlur1.frameBufferTexture)
+        //blurInstance2.load(graphics, renderTargetBlur2.frameBufferTexture)
+
+
+        //renderTargetBlur1
+
+
+        //renderTargetBlur1.load(graphics, graphicsPipeline, width / 4, height / 4)
+        //renderTargetBlur2.load(graphics, graphicsPipeline, width / 4, height / 4)
+
+
+
+
+        //
 
 
         GLES20.glBindFramebuffer(GLES20.GL_FRAMEBUFFER, 0)
-        GLES20.glClearColor(1.0f, 0.15f, 0.4f, 1.0f)
-        GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT)
-
 
         renderTargetPreBloom.render()
-        renderTargetBloom.render()
+
+
+        graphics?.blendSetAdditive()
+        renderTargetBlur2.render()
+
+        graphics?.blendSetDisabled()
+
+        scene?.draw3D(width, height)
+
+        //renderTargetBloom.render()
+
 
         //frameBufferSpriteInstance.setPositionFrame(200.0f, 200.0f, 800.0f, 782.0f)
         //frameBufferSpriteInstance.projectionMatrix.ortho(width, height)
         //frameBufferSpriteInstance.modelViewMatrix.reset()
         //frameBufferSpriteInstance.render(graphicsPipeline.programSprite2D)
 
-        surfaceView?.requestRender()
+        //renderTargetBlur1.frameBufferSpriteInstance.setPositionFrame(0.0f, 0.0f, width, height)
+
+        //renderTargetBlur2.render()
+
+        ///surfaceView?.requestRender()
+
     }
 
     override fun onSurfaceChanged(unused: GL10, width: Int, height: Int) {
